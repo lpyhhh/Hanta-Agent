@@ -13,7 +13,7 @@
 ```bash
 git clone https://github.com/lpyhhh/Yu-Lab-Hantavirus.git
 cd Yu-Lab-Hantavirus
-conda env create -f environment.yml
+conda env create -f environment.yaml
 ```
 
 ### 2. 数据库与数据准备
