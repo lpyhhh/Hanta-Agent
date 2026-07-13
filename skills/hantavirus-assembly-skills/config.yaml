@@ -1,0 +1,48 @@
+# ============================================================
+# hantavirus-assembly-skills 配置文件
+# 必须与 assembly.sh 同目录
+# ============================================================
+
+# --- 输入/输出 ---
+data_dir: /home/ubuntu/project/data           # 原始数据目录（fastq.gz 文件）
+results_dir: /home/ubuntu/project/test/results      # 结果输出目录（自动创建子目录）
+db_dir: /home/ubuntu/project/DB                # 数据库目录，下一级会自动寻找 bowtie2/SILVA
+
+# --- 输入文件后缀 ---
+# 支持多种命名风格，用逗号分隔
+input:
+  r1_suffixes: "_r1.fq.gz,_R1.fq.gz,.r1.fq.gz,.R1.fq.gz,_1.fq.gz,_R1.fastq.gz,_r1.fastq.gz"
+  r2_suffixes: "_r2.fq.gz,_R2.fq.gz,.r2.fq.gz,.R2.fq.gz,_2.fq.gz,_R2.fastq.gz,_r2.fastq.gz"
+
+# --- 全局线程数 ---
+threads: auto                      # auto = 全部CPU；也可指定数字
+
+# --- fastp 质控参数 ---
+fastp:
+  detect_adapter_for_pe: true      # 自动检测接头序列
+  cut_front: true                  # 剪切前端低质量碱基
+  cut_tail: true                   # 剪切尾端低质量碱基
+  cut_window_size: 4               # 滑窗大小
+  cut_mean_quality: 20             # 滑窗平均质量阈值
+  qualified_quality_phred: 20      # 合格碱基质量分
+  unqualified_percent_limit: 30    # 允许的未合格碱基百分比
+  n_base_limit: 5                  # 最大 N 碱基数
+  length_required: 50              # 最小 reads 长度
+  disable_trim_poly_g: true        # 禁用 poly-G 修剪
+
+# --- Bowtie2 去rRNA参数 ---
+bowtie2:
+  preset: sensitive                # preset: very-fast / fast / sensitive / very-sensitive
+
+# --- MEGAHIT 组装参数 ---
+megahit:
+  k_min: 35                        # 最小 k-mer
+  k_max: 95                        # 最大 k-mer
+  k_step: 20                       # k-mer 步长
+  min_contig_len: 800              # 最小 contig 长度（bp）
+  memory: 0.8                      # 内存比例 (0-1)
+
+# --- 清理 ---
+cleanup:
+  delete_fastp_dir: true           # 运行后删除 fastp 中间目录
+  delete_rrna_dir: true            # 运行后删除 rRNA 中间目录

@@ -195,4 +195,4 @@ dependencies:
   - zipp=4.1.0=pyhcf101f3_0
   - zlib=1.3.2=h47b2149_0
   - zstd=1.5.7=hb78ec9c_6
-prefix: /home/ubuntu/software/miniconda3/envs/yu-skills
+prefix: /home/ubuntu/software/miniconda3/envs/lpy-hantavirus-skills

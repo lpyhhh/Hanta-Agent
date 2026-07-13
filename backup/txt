@@ -1,0 +1,12 @@
+我打算构建从下机数据组装-注释一整个流程，并打包成三个skills，分别是hantavirus-assembly-skills、hantavirus-annotation-skills、hantavirus-tree-skills。请你帮我设计一个pipeline，能够将下机数据输入到hantavirus-assembly-skills中，经过另两个skills衔接后输出结果，并且在每个步骤中提供详细的日志和错误处理机制。同时减少流程的输入输出，减少上下文爆炸问题。
+现在我这里有hantavirus-assembly-skills的sh代码（/Users/pyl/Desktop/hantavirus/github/hantavirus-assembly-skills.sh），你根据我的代码，帮我设计hantavirus-assembly-skills的skills，我的想法是sh脚本读取yaml文件，然后根据yaml文件中的参数进行组装分析，并将结果输出到指定目录。
+同时用户使用该skills时，提供yaml文件路径和输入输出目录。
+
+第一次用户需要确认该skills的在本地的位置，然后修改yaml文件中的参数。
+我建议用户的prompt如下：
+请你用[PATH]/skills/hantavirus-assembly-skills (该skills在本地的目录)进行分析
+
+这是一个项目，我需要你先思考，经过我的同意再执行。同时你的输出放到文件中，减少输出token消耗。
+你的想法呢？你的回答和思考精简压缩版（极致省 Token）
+
+这个skills要求用户在conda虚拟环境-lpy-hantavirus-skills下运行程序，看怎么在skills中设置呢？同时修改skills规范以workflow-skill-creator这个skills为参考生成。先告诉我有什么不对，我同意后再执行。减少token消耗
