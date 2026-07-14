@@ -51,7 +51,7 @@ conda --version
 # 需要bin/conda激活环境
 conda create -n yu-skills -y
 # 创建一个新的conda环境，命名为myenv，并安装fastp
-conda install -c conda-forge -c bioconda -c defaults kraken2 awscli bowtie2=2.5.5 megahit=1.2.9 diamond=2.2.3 checkv=1.1.1 genomad=1.12.0 fastp=1.3.3
+conda install -c conda-forge -c bioconda -c defaults kraken2 awscli bowtie2=2.5.5 megahit=1.2.9 diamond=2.2.3 checkv=1.1.1 genomad=1.12.0 fastp=1.3.3 seqkit cd-hit mafft
 # fastp参数
 fastp \
   -i R1.fq.gz -I R2.fq.gz \
@@ -81,3 +81,58 @@ bowtie2 --sensitive -x ${db}/arb_db/arb_db \
     #未匹配 rRNA 的双端 reads（即非 rRNA reads
 done
 
+#megahit
+megahit -1 ${results_rRNA}/${Sample}_non_rRNA_reads.1.fastq \
+    -2 ${results_rRNA}/${Sample}_non_rRNA_reads.2.fastq \
+    -o ${results_megahit}/${Sample} \
+    --min-contig-len 800 \
+    
+# genomad download-database /home/ubuntu/project/DB/genomad_db
+genomad end-to-end \
+    --cleanup \
+    --splits 2 \
+    --lenient-taxonomy \
+    --full-ictv-lineage \
+    --min-score 0.5 \
+    --disable-find-proviruses \
+    /home/ubuntu/project/test/results/megahit/IM22A007/final.contigs.fa \
+    /home/ubuntu/project/test/results/genomad/IM22A007 \
+    /home/ubuntu/project/DB/genomad_db
+# 1输出目录需要存在
+# 提取分类，方便以后分析Hantaviridae，output：两个表，一个是序列文件，另一个是分类文件，用id作为索引
+# 用代码控制，传入分析路径。和输入一样
+
+# hmmer
+## 构建DB
+# python /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/id_down.py 
+# cd-hit -i /home/ubuntu/project/hanta_raw.faa -o /home/ubuntu/project/pep.out.fa.90 -c 0.9 -aS 0.8 -n 5 -g 1 -G 0 -d 0 -p 1 -M 0 -T 16
+# mafft --localpair \
+#         --maxiterate 1000 \
+#         --thread 16 \
+#         /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/pep.out.fa.90 > /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/hanta_aligned.faa
+
+# hmmbuild /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/hanta_aligned.hmm /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/hanta_aligned.faa 
+# hmmpress /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/hanta_aligned.hmm
+
+## 比对分析
+hmmsearch --tblout /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/hanta_hits.tbl \
+            -E 1e-5 \
+            --cpu 8 \
+            /home/ubuntu/project/GitHub/Yu-Lab-Hantavirus/backup/hanta_aligned.hmm \
+            /home/ubuntu/project/test/results/genomad/IM22A003/final.contigs_annotate/final.contigs_proteins.faa
+
+hmmsearch \
+    -E 1e-3 --domE 10 --cpu 16 --noali --acc --notextw \
+    --domtblout /home/ubuntu/project/test/results/hmm/IM22A003.hmmsearch \
+    /home/ubuntu/project/DB/hmm/hanta_aligned.hmm  \
+    /home/ubuntu/project/test/results/megahit/IM22A003/final.contigs.fa
+
+第六步：SeqKit 提取阳性 Contig 序列
+bash
+1. 从 HMMER 结果中提取蛋白 ID 并转换为 Contig ID
+grep -v '^#' /home/ubuntu/project/test/results/hmm/IM22A003.hmmsearch | awk '{print $1}' | awk '{sub(/_[0-9]+$/, "", $1); print $1}' | sort -u > /home/ubuntu/project/test/results/hmm/IM22A003.id
+
+2. 从 Megahit 组装的 Contig 中提取核酸 Fasta 序列
+seqkit grep -f /home/ubuntu/project/test/results/hmm/IM22A003.id \
+            /home/ubuntu/project/test/results/megahit/IM22A003/final.contigs.fa \
+            -o /home/ubuntu/project/test/results/hmm/IM22A003.fna

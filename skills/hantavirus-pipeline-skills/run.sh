@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================
-# hantavirus-assembly-skills 入口包装
-# 自动激活 lpy-hantavirus-skills conda 环境后运行 assembly.sh
+# hantavirus-pipeline-skills 入口包装
+# 自动激活 lpy-hantavirus-skills conda 环境后先后运行 assembly.sh 和 annotation.sh
 # Usage: bash run.sh [config.yaml]
 #   config.yaml 默认取同目录下的 config.yaml
 # ============================================================
@@ -25,14 +25,22 @@ fi
 
 CONDA_ENV="lpy-hantavirus-skills"
 
+run_pipeline() {
+    local sdir="$1"
+    local cfile="$2"
+    echo "=== [1/2] Starting Hantavirus Assembly Pipeline ==="
+    bash "${sdir}/scripts/assembly.sh" "${cfile}"
+    
+    echo "=== [2/2] Starting Hantavirus Annotation Pipeline ==="
+    bash "${sdir}/scripts/annotation.sh" "${cfile}"
+}
+
 # 通过 conda run 启动（错误率最低，不需要 conda init）
 if command -v conda &>/dev/null; then
-    conda run -n "${CONDA_ENV}" bash "${skill_dir}/scripts/assembly.sh" "${config_file}"
+    conda run -n "${CONDA_ENV}" --no-capture-output bash -c "$(declare -f run_pipeline); run_pipeline \"${skill_dir}\" \"${config_file}\""
 else
     echo "WARNING: conda not found. Proceeding with current environment."
-    echo "  Make sure '${CONDA_ENV}' is already activated, or manually:"
-    echo "    conda activate ${CONDA_ENV}"
-    echo "    bash ${skill_dir}/scripts/assembly.sh ${config_file}"
+    echo "  Make sure '${CONDA_ENV}' is already activated."
     echo "---"
-    bash "${skill_dir}/scripts/assembly.sh" "${config_file}"
+    run_pipeline "${skill_dir}" "${config_file}"
 fi
