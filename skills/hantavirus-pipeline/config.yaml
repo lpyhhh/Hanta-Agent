@@ -1,0 +1,54 @@
+# ============================================================
+# 汉坦病毒系统发育分析 - 统一配置文件
+# 位置: /Users/pyl/Desktop/hantavirus-pipeline/config.yaml
+# Skill 脚本读取方式: config_loader.py 从自己目录读取 scripts/config.yaml
+#                      wrapper 启动时自动从主配置同步
+# ============================================================
+
+# --- 项目根目录（数据、数据库、结果所在）---
+project_dir: /media/jjz/lpy/lpy-yu/hantavirus
+
+# --- conda 环境 ---
+conda_env: lpy-hantavirus-skills
+
+# --- 输入文件后缀（自动发现数据目录下的双端测序文件）---
+input:
+  r1_suffixes: "_r1.fq.gz,_R1.fq.gz,.r1.fq.gz,.R1.fq.gz,_1.fq.gz,_1.fastq.gz,_R1.fastq.gz,_r1.fastq.gz"
+  r2_suffixes: "_r2.fq.gz,_R2.fq.gz,.r2.fq.gz,.R2.fq.gz,_2.fq.gz,_2.fastq.gz,_R2.fastq.gz,_r2.fastq.gz"
+
+# --- fastp 质控参数 ---
+fastp:
+  detect_adapter_for_pe: true
+  cut_front: true
+  cut_tail: true
+  cut_window_size: 4
+  cut_mean_quality: 20
+  qualified_quality_phred: 20
+  unqualified_percent_limit: 30
+  n_base_limit: 5
+  length_required: 50
+  disable_trim_poly_g: true
+
+# --- bowtie2 去 rRNA 参数 ---
+bowtie2:
+  preset: sensitive
+
+# --- megahit 组装参数 ---
+megahit:
+  min_contig_len: 300
+
+# --- diamond 比对参数 ---
+diamond:
+  evalue: 0.00001
+  max_target_seqs: 1
+
+# --- 合并过滤参数 ---
+merge:
+  pident_min: 50.0
+
+# --- 系统发育分析参数 ---
+phylogeny:
+  sh_alrt_min: 80
+  mafft_preset: auto
+  iqtree_bootstrap: 1000
+  iqtree_alrt: 1000
