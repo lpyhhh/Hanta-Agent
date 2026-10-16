@@ -1,4 +1,4 @@
-# Yu-Lab-Hantavirus
+# Hanta-Agent
 
 # 该项目后续更新位置--[Hanta-Agent](https://github.com/Yu-Lab-Genomics/Hanta-Agent)
 
