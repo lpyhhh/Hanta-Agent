@@ -1,6 +1,7 @@
 # Yu-Lab-Hantavirus
 
-# 该项目后续更新位置在(Hanta-Agent)[https://github.com/Yu-Lab-Genomics/Hanta-Agent]
+# 该项目后续更新位置--[Hanta-Agent](https://github.com/Yu-Lab-Genomics/Hanta-Agent)
+
 
 本仓库包含 Yu-Lab 团队在 Hantavirus 相关的代码、数据和文档。
 
